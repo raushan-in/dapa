@@ -2,7 +2,7 @@ from groq import Groq
 
 client = Groq()
 completion = client.chat.completions.create(
-    model="llama-3.3-70b-versatile",
+    model="llama3-8b-8192",
     messages=[
         {
             "role": "system",
@@ -17,8 +17,8 @@ completion = client.chat.completions.create(
             "content": "Hello. I'm DAPA, here to help you report potential digital financial scams or fraud. Have you received a suspicious call or message that you think might be a scam? If so, could you please provide the scammer's phone number and details about the scam?"
         }
     ],
-    temperature=1,
-    max_tokens=1024,
+    temperature=0.41,
+    max_tokens=1000,
     top_p=1,
     stream=True,
     stop=None,
