@@ -166,6 +166,7 @@ async def report_scam(request: ScamReportRequest):
 
         # Extract data from LLM response
         for_system = response.get("for_system", {})
+        for_user = response.get("for_user", {})
 
         # Perform operations based on LLM instructions
         if for_system.get("query_db_scam_check"):
@@ -192,7 +193,7 @@ async def report_scam(request: ScamReportRequest):
             )
             return {"detail": "Response sent via WhatsApp."}
 
-        if for_system.get("insert_report"):
+        elif for_system.get("insert_report"):
             phone_number = for_system.get("number")
             scam_type = for_system.get("scam_type")
             report_summary = for_system.get("report")
@@ -261,12 +262,17 @@ async def report_scam(request: ScamReportRequest):
                     user_number, "Your report has been saved. Thank you!"
                 )
                 return {"detail": "Report saved and response sent via WhatsApp."}
-
-        # Update context for next message
-        user_session["context"] = user_input
-        set_user_session(user_number, user_session)
-
-        return {"detail": "Context updated."}
+            
+        elif for_user.get("message"):
+            send_whatsapp_message(user_number, for_user["message"])
+            # Update context for next message
+            user_session["context"] = user_input
+            set_user_session(user_number, user_session)
+            return {"detail": "Response sent via WhatsApp."}
+        else:
+            raise HTTPException(
+                status_code=400, detail="LLM response does not contain message."
+            )
 
     except Exception as e:
         print(repr(e))
