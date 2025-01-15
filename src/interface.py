@@ -10,7 +10,7 @@ APP_ICON = "🛡️"
 
 # Load environment variables
 load_dotenv()
-BACKEND_URL = os.getenv("AGENT_URL", "http://dapa_backend:8080")
+BACKEND_URL = os.getenv("BACKEND_URL")
 CHAT_API = BACKEND_URL + "/chat"
 
 async def get_response(user_message: str, thread_id: str | None = None) -> dict:
@@ -22,7 +22,7 @@ async def get_response(user_message: str, thread_id: str | None = None) -> dict:
         try:
             response = await client.post(CHAT_API, json=payload)
             response.raise_for_status()
-            return response.json()  # Expected to return {"response_message": ..., "thread_id": ...}
+            return response.json()
         except httpx.HTTPError as e:
             return {"error": f"Error connecting to backend: {str(e)}"}
 
@@ -54,10 +54,11 @@ async def main():
         if "error" in response:
             st.error(response["error"])
         else:
-            bot_response = response["response_message"]
+            response_message = response["response_message"]
+            responder = response["responder"]
             st.session_state.thread_id = response["thread_id"]  # Update thread_id for multi-turn conversations
-            st.session_state.messages.append({"sender": "bot", "content": bot_response})
-            st.chat_message("bot").write(bot_response)
+            st.session_state.messages.append({"sender": responder, "content": response_message})
+            st.chat_message(responder).write(response_message)
 
     with st.sidebar:
         st.header(f"{APP_ICON} {APP_TITLE}")

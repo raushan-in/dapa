@@ -19,7 +19,7 @@ services:
       depends_on:
         - dapa_backend
       environment:
-        - AGENT_URL=http://dapa_backend
+        - BACKEND_URL=http://dapa_backend:8080
       develop:
         watch:
           - path: src/client/
