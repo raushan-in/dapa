@@ -1,11 +1,24 @@
 services:
   dapa_backend:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.server
     container_name: dapa_backend
     ports:
       - "8080:8080"
     env_file:
       - .env
+
+  streamlit_frontend:
+      build:
+        context: .
+        dockerfile: Dockerfile.client
+      ports:
+        - "8501:8501"
+      depends_on:
+        - dapa_backend
+      environment:
+        - AGENT_URL=http://dapa_backend
 
 # To build and run the app:
 # docker compose up --build -d

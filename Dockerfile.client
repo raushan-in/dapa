@@ -1,0 +1,14 @@
+FROM python:3.12.3-slim
+
+WORKDIR /app
+
+COPY requirements_client.txt ./
+RUN pip install --no-cache-dir -r requirements_client.txt
+
+COPY src/ src/
+
+EXPOSE 8501
+
+HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
+
+ENTRYPOINT ["streamlit", "run", "src/interface.py", "--server.port=8501", "--server.address=0.0.0.0"]
