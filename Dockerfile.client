@@ -5,7 +5,7 @@ WORKDIR /app
 COPY requirements_client.txt ./
 RUN pip install --no-cache-dir -r requirements_client.txt
 
-COPY src/ src/
+COPY . .
 
 EXPOSE 8088
 
