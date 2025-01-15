@@ -14,7 +14,7 @@ services:
         context: .
         dockerfile: Dockerfile.client
       ports:
-        - "8501:8501"
+        - "8088:8088"
       depends_on:
         - dapa_backend
       environment:

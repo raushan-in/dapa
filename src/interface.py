@@ -11,8 +11,7 @@ from streamlit.runtime.scriptrunner import get_script_run_ctx
 # A Streamlit app for interacting with the backend AI agent.
 
 
-
-APP_TITLE = "Agent Service Toolkit"
+APP_TITLE = "DAPA"
 APP_ICON = "🛡️"
 
 
