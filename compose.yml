@@ -1,11 +1,38 @@
 services:
   dapa_backend:
-    build: .
-    container_name: dapa_backend
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: backend
     ports:
       - "8080:8080"
     env_file:
       - .env
 
+  streamlit_frontend:
+      build:
+        context: .
+        dockerfile: Dockerfile.client
+      container_name: streamlit
+      ports:
+        - "8088:8088"
+      depends_on:
+        - dapa_backend
+      environment:
+        - AGENT_URL=http://dapa_backend
+      develop:
+        watch:
+          - path: src/client/
+            action: sync+restart
+            target: /app/client/
+          - path: src/schema/
+            action: sync+restart
+            target: /app/schema/
+          - path: src/interface.py
+            action: sync+restart
+            target: /app/interface.py
+
 # To build and run the app:
 # docker compose up --build -d
+# or for dev easy
+# docker compose watch
