@@ -1,6 +1,5 @@
 import asyncio
 import os
-import urllib.parse
 import httpx
 import streamlit as st
 from dotenv import load_dotenv
@@ -40,13 +39,18 @@ async def main():
 
     # Display chat history
     for message in st.session_state.messages:
-        sender = "user" if message["sender"] == "user" else "bot"
-        st.chat_message(sender).write(message["content"])
+        responder_type = message["responder"]
+        if responder_type == "human":
+            st.chat_message("human").write(message["content"])
+        elif responder_type == "ai":
+            st.chat_message("ai").write(message["content"])
+        elif responder_type == "tool":
+            st.chat_message("tool").write(message["content"])  # Explicit tool handling
 
     # User input
     if user_input := st.chat_input("Type your message here..."):
-        st.session_state.messages.append({"sender": "user", "content": user_input})
-        st.chat_message("user").write(user_input)
+        st.session_state.messages.append({"responder": "human", "content": user_input})
+        st.chat_message("human").write(user_input)
 
         # Send the user message to the backend
         response = await get_response(user_input, st.session_state.thread_id)
@@ -55,10 +59,18 @@ async def main():
             st.error(response["error"])
         else:
             response_message = response["response_message"]
-            responder = response["responder"]
-            st.session_state.thread_id = response["thread_id"]  # Update thread_id for multi-turn conversations
-            st.session_state.messages.append({"sender": responder, "content": response_message})
-            st.chat_message(responder).write(response_message)
+            responder = response["responder"]  # "ai", "tool", or "human"
+            st.session_state.thread_id = response["thread_id"]
+
+            # Append the response to session state and display the appropriate message type
+            st.session_state.messages.append({"responder": responder, "content": response_message})
+
+            if responder == "human":
+                st.chat_message("human").write(response_message)
+            elif responder == "ai":
+                st.chat_message("ai").write(response_message)
+            elif responder == "tool":
+                st.chat_message("tool").write(response_message)
 
     with st.sidebar:
         st.header(f"{APP_ICON} {APP_TITLE}")
