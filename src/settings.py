@@ -32,7 +32,7 @@ class Settings(BaseSettings):
 
     # Tracing for Langchain
     LANGCHAIN_TRACING_V2: bool = (
-        False  # Data will be sent to Langchain for monitering and improvement, if enabled
+        False  # Data will be sent to Langchain for monitering and improvement, If enabled.
     )
     LANGCHAIN_PROJECT: str = "default"
     LANGCHAIN_ENDPOINT: str = "https://api.smith.langchain.com"
@@ -46,7 +46,9 @@ class Settings(BaseSettings):
             raise ValueError("Tracing is enabled, but LANGCHAIN_API_KEY is missing!")
 
         if self.GROQ_API_KEY is None:
-            raise ValueError("GROQ_API_KEY is required! Please set it in environment.")
+            raise ValueError(
+                "GROQ_API_KEY is required! This key enables the application to connect with an advanced language model that understands queries and provides intelligent responses. You can generate your API at https://console.groq.com/keys ."
+            )
 
     @computed_field
     @property
