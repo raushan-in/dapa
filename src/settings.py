@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     # LLM API keys
     GROQ_API_KEY: SecretStr
     GROQ_MODEL: str = "llama3-8b-8192"
+    GROQ_MODEL_TEMP: float = 0.5
 
     # Tracing for Langchain
     LANGCHAIN_TRACING_V2: bool = (

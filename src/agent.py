@@ -15,7 +15,9 @@ from langgraph.prebuilt import ToolNode
 from settings import settings
 from tools import register_scam, search_scam
 
-llm = ChatGroq(model=settings.GROQ_MODEL, temperature=0.4, streaming=False)
+llm = ChatGroq(
+    model=settings.GROQ_MODEL, temperature=settings.GROQ_MODEL_TEMP, streaming=False
+)
 
 scam_categories = {
     1: [
