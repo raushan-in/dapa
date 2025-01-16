@@ -29,7 +29,6 @@ def register_scam(
     """
     try:
         # Database insert operation  TODO
-        print(scammer_mobile, scam_id, reporter_ordeal, reporter_mobile)
         return f"A report has been registered for {scammer_mobile}."
     except Exception as exc:
         print(repr(exc))
@@ -65,8 +64,7 @@ def search_scam(mobile: str) -> str:
     """
     try:
         # Database select query to search scams by scammer mobile number - TODO
-        print(mobile)
-        return ""
+        return f"{mobile} searched..."
     except Exception as exc:
         print(repr(exc))
         return f"An error occurred while searching scam for {mobile}."
