@@ -2,13 +2,12 @@
 Endpoints defination
 """
 
-from fastapi import APIRouter, Depends, FastAPI, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 from auth import verify_bearer
 from schema import SingleResponse, UserInput
 from utils import get_llm_response, infer_chat_message
 
-app = FastAPI(title="DAPA", summary="Digital Arrest Protection App")
 bot_router = APIRouter(tags=["bot"], dependencies=[Depends(verify_bearer)])
 
 
@@ -31,6 +30,3 @@ async def invoke(user_input: UserInput) -> SingleResponse:
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail="Unexpected error")
-
-
-app.include_router(bot_router)

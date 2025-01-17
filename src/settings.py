@@ -39,6 +39,9 @@ class Settings(BaseSettings):
     LANGCHAIN_ENDPOINT: str = "https://api.smith.langchain.com"
     LANGCHAIN_API_KEY: SecretStr | None = None  # LangSmith API key
 
+    # DB
+    DATABASE_URL: SecretStr
+
     def model_post_init(self, __context: Any) -> None:
         """
         Validate the settings after initialization
