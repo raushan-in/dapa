@@ -74,7 +74,7 @@ async def main():
         st.write("DAPA chatbot for secure reporting of scams.")
 
         # Privacy Section
-        with st.expander("🛡️ Privacy"):
+        with st.expander("🔒 Privacy"):
             st.write(
                 "Query and response in this app are anonymously recorded and saved to LangSmith for product evaluation and improvement purposes."
             )
