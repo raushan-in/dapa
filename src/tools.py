@@ -1,15 +1,16 @@
 from langchain_core.tools import tool
 
-from database import Scammer, session
+from database import Scammer, get_session
+
+from sqlmodel import select
 
 
 @tool
-async def register_scam(scammer: Scammer) -> str:
+async def register_scam(scammer_mobile: str, scam_id: int, reporter_ordeal:str,  reporter_mobile:str) -> str:
     """
     Registers a report of a scam incident into the database.
 
     Parameters:
-        scammer (Scammer): An instance of the Scammer model containing the following fields:
             - scammer_mobile (str): The mobile number of the alleged scammer.
               Must be formatted as "+XX-<mobile_number>", where "+XX" is the country code.
             - scam_id (int): The unique identifier for the type of scam.
@@ -17,7 +18,6 @@ async def register_scam(scammer: Scammer) -> str:
               Should not exceed 100 words.
             - reporter_mobile (str): The mobile number of the person reporting the scam.
               Must be formatted as "+XX-<mobile_number>", where "+XX" is the country code.
-            - created_at (datetime): The timestamp when the scam report is created. Automatically generated.
 
     Returns:
         str: A confirmation message if the report is registered successfully, or an error
@@ -34,9 +34,11 @@ async def register_scam(scammer: Scammer) -> str:
         "A report has been registered for +91-9876543210."
     """
     try:
-        await session.add(scammer)
-        await session.commit()
-        return f"A report has been registered for {scammer.scammer_mobile}."
+        scammer = Scammer(scammer_mobile = scammer_mobile, scam_id = scam_id, reporter_ordeal= reporter_ordeal,  reporter_mobile= reporter_mobile)
+        async with get_session() as session:
+            session.add(scammer)
+            await session.commit()
+            return f"A report has been registered for {scammer_mobile}."
     except Exception as exc:
         print(repr(exc))
         return f"An error occurred in registering a report for {scammer_mobile}."
@@ -58,22 +60,15 @@ async def search_scam(mobile: str) -> str:
         str: If a scam report is found, returns a string representation of the Scammer object.
         If no scams are found, returns a message indicating that the mobile number is not reported.
         If an error occurs during the search process, returns an error message.
-
-    Example:
-        >>> search_scam("+91-9876543210")
-        "Scammer(id=1, scammer_mobile='+91-9876543210', scam_id=4, reporter_ordeal='...', ...)"
-
-        >>> search_scam("+91-1234567890")
-        "+91-1234567890 is not reported as scammer."
-
-        >>> search_scam("+91-0000000000")
-        "An error occurred while searching scam for +91-0000000000."
     """
     try:
-        scammer = await session.get(Scammer, mobile)
-        if not scammer:
-            return f"{mobile} is not reported as scammer."
-        return scammer
+        async with get_session() as session:
+            statement = select(Scammer).where(Scammer.scammer_mobile == mobile)
+            result = await session.exec(statement)
+            scammer = result.first()  # Get the first matching result
+            if not scammer:
+                return f"{mobile} is not reported as scammer."
+            return f"Scammer found: {scammer}"
     except Exception as exc:
         print(repr(exc))
         return f"An error occurred while searching scam for {mobile}."

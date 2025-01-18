@@ -1,13 +1,14 @@
 from datetime import datetime
-from typing import Annotated
 
 from fastapi import Depends
 from sqlmodel import Field, SQLModel
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlmodel.ext.asyncio.session import AsyncSession
+from contextlib import asynccontextmanager
 
 from settings import settings
+
 
 database_url = settings.DATABASE_URL.get_secret_value()
 
@@ -21,12 +22,17 @@ async def create_db_and_tables():
         await conn.run_sync(SQLModel.metadata.create_all)
 
 
+@asynccontextmanager
 async def get_session() -> AsyncSession:
+    """
+    Dependency function to provide an async database session.
+    Ensures proper cleanup after use.
+    """
     async with async_session() as session:
-        yield session
-
-
-session = Annotated[AsyncSession, Depends(get_session)]
+        try:
+            yield session
+        finally:
+            await session.close()
 
 
 class Scammer(SQLModel, table=True):
