@@ -12,6 +12,8 @@ services:
       - .env
     environment:
       - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dapa_pg:${POSTGRES_PORT}/${POSTGRES_DB}
+    networks:
+      - dapa-network
 
 
   dapa_streamlit_fe:
@@ -25,6 +27,8 @@ services:
         - dapa_be
       environment:
         - BACKEND_URL=http://dapa_backend:8080
+      networks:
+        - dapa-network
       develop:
         watch:
           - path: src/client/
@@ -44,11 +48,16 @@ services:
       - "5432:5432"
     env_file:
       - .env
+    networks:
+      - dapa-network
     volumes:
       - pg_db_1:/var/lib/postgresql/data
 
 volumes:
   pg_db_1:
+
+networks:
+  dapa-network:
 
 # To build and run the app:
 # docker compose up --build -d
