@@ -76,7 +76,7 @@ async def main():
         # Privacy Section
         with st.expander("🛡️ Privacy"):
             st.write(
-                "Prompts, responses and feedback in this app are anonymously recorded and saved to LangSmith for product evaluation and improvement purposes only."
+                "Query and response in this app are anonymously recorded and saved to LangSmith for product evaluation and improvement purposes."
             )
 
         st.markdown(
