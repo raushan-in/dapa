@@ -1,12 +1,13 @@
 from langchain_core.tools import tool
+from sqlmodel import select
 
 from database import Scammer, get_session
 
-from sqlmodel import select
-
 
 @tool
-async def register_scam(scammer_mobile: str, scam_id: int, reporter_ordeal:str,  reporter_mobile:str) -> str:
+async def register_scam(
+    scammer_mobile: str, scam_id: int, reporter_ordeal: str, reporter_mobile: str
+) -> str:
     """
     Registers a report of a scam incident into the database.
 
@@ -34,7 +35,12 @@ async def register_scam(scammer_mobile: str, scam_id: int, reporter_ordeal:str, 
         "A report has been registered for +91-9876543210."
     """
     try:
-        scammer = Scammer(scammer_mobile = scammer_mobile, scam_id = scam_id, reporter_ordeal= reporter_ordeal,  reporter_mobile= reporter_mobile)
+        scammer = Scammer(
+            scammer_mobile=scammer_mobile,
+            scam_id=scam_id,
+            reporter_ordeal=reporter_ordeal,
+            reporter_mobile=reporter_mobile,
+        )
         async with get_session() as session:
             session.add(scammer)
             await session.commit()

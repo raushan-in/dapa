@@ -1,14 +1,13 @@
+from contextlib import asynccontextmanager
 from datetime import datetime
 
 from fastapi import Depends
-from sqlmodel import Field, SQLModel
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
+from sqlmodel import Field, SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
-from contextlib import asynccontextmanager
 
 from settings import settings
-
 
 database_url = settings.DATABASE_URL.get_secret_value()
 
