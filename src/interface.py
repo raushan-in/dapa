@@ -33,10 +33,10 @@ async def main():
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    st.title(f"{APP_ICON} DAPA AI Chatbot")
+    st.title(f"{APP_ICON} DAPA AI Assistant")
     st.write(
-        "This chatbot helps you report phone numbers involved in financial fraud or cyber scams."
-        "Please describe the incident below."
+        "This bot helps you identify or report phone numbers involved in financial fraud or cyber scams."
+        "Please describe your incident below."
     )
 
     for message in st.session_state.messages:

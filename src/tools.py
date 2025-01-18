@@ -16,7 +16,7 @@ async def register_scam(
               Must be formatted as "+XX-<mobile_number>", where "+XX" is the country code.
             - scam_id (int): The unique identifier for the type of scam.
             - reporter_ordeal (str): A summary of the ordeal narrated by the reporter.
-              Should not exceed 100 words.
+              Should not exceed 50 words.
             - reporter_mobile (str): The mobile number of the person reporting the scam.
               Must be formatted as "+XX-<mobile_number>", where "+XX" is the country code.
 
@@ -44,7 +44,7 @@ async def register_scam(
         async with get_session() as session:
             session.add(scammer)
             await session.commit()
-            return f"A report has been registered for {scammer_mobile}."
+            return f"{mobile} has been registered as a scammer. ✅ Thank you for combating scams! 🥇"
     except Exception as exc:
         print(repr(exc))
         return f"An error occurred in registering a report for {scammer_mobile}."
@@ -71,10 +71,10 @@ async def search_scam(mobile: str) -> str:
         async with get_session() as session:
             statement = select(Scammer).where(Scammer.scammer_mobile == mobile)
             result = await session.exec(statement)
-            scammer = result.first()  # Get the first matching result
-            if not scammer:
-                return f"{mobile} is not reported as scammer."
-            return f"Scammer found: {scammer}"
+            scams = result.all()
+            if not scams:
+                return f"{mobile} has never been reported for scams or fraudulent activity."
+            return f"{mobile} has been reported as a scammer {len(scams)} times in the past. 🚨 Be alert! ⚠️"
     except Exception as exc:
         print(repr(exc))
         return f"An error occurred while searching scam for {mobile}."
