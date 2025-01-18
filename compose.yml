@@ -1,23 +1,28 @@
 services:
-  dapa_backend:
+  dapa_be:
     build:
       context: .
       dockerfile: Dockerfile.server
-    container_name: backend
+    container_name: dapa_backend
+    depends_on:
+        - dapa_pg
     ports:
       - "8080:8080"
     env_file:
       - .env
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dapa_pg:${POSTGRES_PORT}/${POSTGRES_DB}
 
-  streamlit_frontend:
+
+  dapa_streamlit_fe:
       build:
         context: .
         dockerfile: Dockerfile.client
-      container_name: streamlit
+      container_name: dapa_streamlit
       ports:
         - "8088:8088"
       depends_on:
-        - dapa_backend
+        - dapa_be
       environment:
         - BACKEND_URL=http://dapa_backend:8080
       develop:
@@ -31,6 +36,19 @@ services:
           - path: src/interface.py
             action: sync+restart
             target: /app/interface.py
+  
+  dapa_pg:
+    image: postgres:latest
+    container_name: dapa_pg
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - pg_db_1:/var/lib/postgresql/data
+
+volumes:
+  pg_db_1:
 
 # To build and run the app:
 # docker compose up --build -d
