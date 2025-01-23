@@ -14,7 +14,7 @@ from settings import settings
 
 database_url = settings.DATABASE_URL.get_secret_value()
 
-engine = create_async_engine(database_url, echo=True)
+engine = create_async_engine(database_url, echo=settings.is_dev())
 
 async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
