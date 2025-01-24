@@ -65,10 +65,10 @@ DAPA leverages an AI chatbot over traditional form-based tools for the following
   - Quick lookup of phone numbers to check for prior scam reports.
 
 ### Technology Stack:
-- **Backend**: Python, FastAPI
+- **Backend**: Python, FastAPI, LangGraph
 - **Frontend**: Streamlit
 - **Database**: PostgreSQL
-- **AI Model**: GROQ LLaMA 3 for inference
+- **AI Model**: GROQ LLaMA 3 (Configurable)
 
 ---
 
@@ -102,7 +102,10 @@ docker compose up --build -d
 - **Enhanced AI Capabilities**: Continuous improvement of the scam categorization model to ensure accuracy and adaptability to emerging scam types.
 ---
 
----
+## Contact
+For improvements or collaboration, feel free to connect:  
+[Raushan's LinkedIn Profile](https://www.linkedin.com/in/raushan-in/)
+
 Together, let’s combat financial fraud and make the digital world safer for everyone. 
 
 **DAPA – Digital Arrest Protection App**
