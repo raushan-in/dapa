@@ -25,6 +25,8 @@ services:
         - "8088:8088"
       depends_on:
         - dapa_be
+      env_file:
+        - .env
       environment:
         - BACKEND_URL=http://dapa_backend:8080
       networks:

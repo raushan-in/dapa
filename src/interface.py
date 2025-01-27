@@ -4,6 +4,7 @@ import os
 import httpx
 import streamlit as st
 from dotenv import load_dotenv
+from google_auth_oauthlib.flow import Flow
 
 APP_TITLE = "DAPA"
 APP_ICON = "🛡️"
@@ -12,7 +13,27 @@ APP_ICON = "🛡️"
 load_dotenv()
 BACKEND_URL = os.getenv("BACKEND_URL")
 CHAT_API = BACKEND_URL + "/chat"
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
 
+# Initialize Google OAuth flow
+def google_login_flow():
+    flow = Flow.from_client_config(
+        {
+            "web": {
+                "client_id": GOOGLE_CLIENT_ID,
+                "client_secret": GOOGLE_CLIENT_SECRET,
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+                "scopes": ["https://www.googleapis.com/auth/userinfo.email"],
+            }
+        },
+        scopes=["https://www.googleapis.com/auth/userinfo.email"],
+    )
+    flow.redirect_uri = REDIRECT_URI 
+    auth_url, _ = flow.authorization_url(prompt="consent")
+    return flow, auth_url
 
 async def get_response(user_message: str, thread_id: str | None = None) -> dict:
     payload = {"user_message": user_message, "thread_id": thread_id}
@@ -28,10 +49,13 @@ async def get_response(user_message: str, thread_id: str | None = None) -> dict:
 async def main():
     st.set_page_config(page_title=APP_TITLE, page_icon=APP_ICON)
 
+    # Initialize session states
     if "thread_id" not in st.session_state:
         st.session_state.thread_id = None
     if "messages" not in st.session_state:
         st.session_state.messages = []
+    if "google_user" not in st.session_state:
+        st.session_state.google_user = None
 
     st.title(f"{APP_ICON} DAPA AI Assistant")
     st.write(
@@ -82,6 +106,19 @@ async def main():
         st.markdown(
             "Made with ❤️ by [Raushan](https://www.linkedin.com/in/raushan-in/) in Trier"
         )
+
+        st.write("---")
+
+        # Google Login Section
+        if st.session_state.google_user:
+            st.write(f"Welcome, {st.session_state.google_user['email']}!")
+            if st.button("Logout"):
+                st.session_state.google_user = None
+        else:
+            st.write("Login with Google to access more features.")
+            flow, auth_url = google_login_flow()
+            st.session_state.flow = flow
+            st.markdown(f"[Login with Google]({auth_url})")
 
 
 if __name__ == "__main__":
