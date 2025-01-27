@@ -26,10 +26,12 @@ def google_login_flow():
                 "client_secret": GOOGLE_CLIENT_SECRET,
                 "auth_uri": "https://accounts.google.com/o/oauth2/auth",
                 "token_uri": "https://oauth2.googleapis.com/token",
-                "scopes": ["https://www.googleapis.com/auth/userinfo.email"],
             }
         },
-        scopes=["https://www.googleapis.com/auth/userinfo.email"],
+        scopes=[
+            "https://www.googleapis.com/auth/userinfo.email",
+            "https://www.googleapis.com/auth/userinfo.profile",
+        ]
     )
     flow.redirect_uri = REDIRECT_URI 
     auth_url, _ = flow.authorization_url(prompt="consent")
@@ -111,14 +113,15 @@ async def main():
 
         # Google Login Section
         if st.session_state.google_user:
-            st.write(f"Welcome, {st.session_state.google_user['email']}!")
+            st.write(f"Welcome, {st.session_state.google_user['name']}!")
+            st.write(f"Email: {st.session_state.google_user['email']}")
             if st.button("Logout"):
                 st.session_state.google_user = None
         else:
             st.write("Login with Google to access more features.")
             flow, auth_url = google_login_flow()
             st.session_state.flow = flow
-            st.markdown(f"[Login with Google]({auth_url})")
+            st.markdown(f"[Login]({auth_url})")
 
 
 if __name__ == "__main__":
