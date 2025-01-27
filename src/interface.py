@@ -28,7 +28,8 @@ def google_login_flow():
                 "token_uri": "https://oauth2.googleapis.com/token",
             }
         },
-        scopes=[
+        scopes = [
+            "openid",
             "https://www.googleapis.com/auth/userinfo.email",
             "https://www.googleapis.com/auth/userinfo.profile",
         ]
@@ -36,6 +37,11 @@ def google_login_flow():
     flow.redirect_uri = REDIRECT_URI 
     auth_url, _ = flow.authorization_url(prompt="consent")
     return flow, auth_url
+
+def fetch_google_user_info(flow):
+    session = flow.authorized_session()
+    user_info = session.get("https://openidconnect.googleapis.com/v1/userinfo").json()
+    return {"name": user_info.get("name"), "email": user_info.get("email")}
 
 async def get_response(user_message: str, thread_id: str | None = None) -> dict:
     payload = {"user_message": user_message, "thread_id": thread_id}
@@ -122,6 +128,13 @@ async def main():
             flow, auth_url = google_login_flow()
             st.session_state.flow = flow
             st.markdown(f"[Login]({auth_url})")
+
+        # Handle redirect after login
+        if "code" in st.query_params:
+            code = st.query_params["code"]
+            flow.fetch_token(code=code)
+            user_info = fetch_google_user_info(flow)
+            st.session_state.google_user = user_info
 
 
 if __name__ == "__main__":
