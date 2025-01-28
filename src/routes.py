@@ -6,16 +6,16 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from auth import verify_bearer
 from schema import SingleResponse, UserInput
-from utils import get_llm_response, infer_chat_message
+from utils import get_llm_response, infer_chat_message, rate_limiter
 
 bot_router = APIRouter(tags=["bot"], dependencies=[Depends(verify_bearer)])
 
 
 @bot_router.post("/chat")
-async def invoke(user_input: UserInput) -> SingleResponse:
+@rate_limiter
+async def agent_chat(user_input: UserInput) -> SingleResponse:
     """
-    Invoke an agent with user input to retrieve a final response.
-
+    Invoke an agent with user input to retrieve a response.
     Use thread_id to persist and continue a multi-turn conversation.
     """
     try:

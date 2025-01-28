@@ -7,7 +7,10 @@ scam_categories = {
         "UPI Scam",
         "Scammers claim accidental UPI payments and request refunds, or attempt scams related to UPI, PhonePe, Google Pay, or any quick payment interface.",
     ],
-    3: ["OTP Scam", "Scammers request OTPs to gain unauthorized access to bank account."],
+    3: [
+        "OTP Scam",
+        "Scammers request OTPs to gain unauthorized access to bank account.",
+    ],
     4: [
         "Fake Buyer/Seller Scam",
         "Scammers pose as buyers requesting refunds or as fraudulent sellers asking for advance payments.",

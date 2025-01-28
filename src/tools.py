@@ -6,7 +6,11 @@ from database import Scammer, get_session
 
 @tool
 async def register_scam(
-    scammer_mobile: str, scam_id: int, reporter_ordeal: str, reporter_mobile: str= None, reporter_email: str = None
+    scammer_mobile: str,
+    scam_id: int,
+    reporter_ordeal: str,
+    reporter_mobile: str = None,
+    reporter_email: str = None,
 ) -> str:
     """
     Registers a report of a scam incident into the database.

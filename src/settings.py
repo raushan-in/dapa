@@ -42,6 +42,9 @@ class Settings(BaseSettings):
     # DB
     DATABASE_URL: SecretStr
 
+    # Redis
+    REDIS_URL: str
+
     def model_post_init(self, __context: Any) -> None:
         """
         Validate the settings after initialization

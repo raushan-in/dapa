@@ -68,6 +68,7 @@ DAPA leverages an AI chatbot over traditional form-based tools for the following
 - **Backend**: Python, FastAPI, LangGraph
 - **Frontend**: Streamlit
 - **Database**: PostgreSQL
+- **Memory**: Redis
 - **AI Model**: GROQ LLaMA 3 (Configurable)
 
 ---

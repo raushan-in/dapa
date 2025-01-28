@@ -6,12 +6,14 @@ services:
     container_name: dapa_backend
     depends_on:
         - dapa_pg
+        - dapa_redis
     ports:
       - "8080:8080"
     env_file:
       - .env
     environment:
       - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dapa_pg:${POSTGRES_PORT}/${POSTGRES_DB}
+      - REDIS_URL=redis://dapa_redis:6379
     networks:
       - dapa-network
 
@@ -54,6 +56,15 @@ services:
       - dapa-network
     volumes:
       - pg_db_1:/var/lib/postgresql/data
+
+  dapa_redis:
+    image: redis:latest
+    container_name: dapa_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - dapa-network
 
 volumes:
   pg_db_1:

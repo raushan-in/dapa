@@ -44,8 +44,12 @@ class Scammer(SQLModel, table=True):
     scammer_mobile: str = Field(index=True, description="Scammer mobile number")
     scam_id: int = Field(description="Scam ID of the scam type")
     reporter_ordeal: str = Field(description="Summary of the scam")
-    reporter_mobile: Optional[str] = Field(default=None, description="Reporter mobile number")
-    reporter_email: Optional[EmailStr] = Field(default=None, description="Reporter email")
+    reporter_mobile: Optional[str] = Field(
+        default=None, description="Reporter mobile number"
+    )
+    reporter_email: Optional[EmailStr] = Field(
+        default=None, description="Reporter email"
+    )
     created_at: datetime = Field(
         default_factory=datetime.now, description="Timestamp of report creation"
     )
@@ -55,10 +59,12 @@ class Scammer(SQLModel, table=True):
         """Ensure at least one of reporter_mobile or reporter_email is provided."""
         mobile = values.get("reporter_mobile")
         email = values.get("reporter_email")
-        
+
         if not mobile and not email:
-            raise ValueError("At least one of 'reporter_mobile' or 'reporter_email' must be provided.")
-        
+            raise ValueError(
+                "At least one of 'reporter_mobile' or 'reporter_email' must be provided."
+            )
+
         return values
 
     @staticmethod
@@ -73,7 +79,9 @@ class Scammer(SQLModel, table=True):
     def apply_validations(cls, values):
         """Apply individual field validations."""
         if values.get("reporter_mobile"):
-            values["reporter_mobile"] = cls.validate_mobile_number(values["reporter_mobile"])
+            values["reporter_mobile"] = cls.validate_mobile_number(
+                values["reporter_mobile"]
+            )
         return values
 
     @validator("scam_id")
