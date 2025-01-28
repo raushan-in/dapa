@@ -1,6 +1,6 @@
 from typing import Any, Literal, NotRequired
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field
 from typing_extensions import TypedDict
 
 
@@ -16,6 +16,7 @@ class UserInput(BaseModel):
         default=None,
         examples=["847c6285-8fc9-4560-a83f-4e628xx09254"],
     )
+    email: EmailStr | None = Field(default=None)
 
 
 class SingleResponse(BaseModel):
