@@ -89,29 +89,35 @@ async def main():
 
     # Sidebar for Google Login and Other Features
     with st.sidebar:
+        if st.session_state["connected"]:
+            st.image(st.session_state["user_info"]["picture"])
+            st.write(st.session_state["user_info"].get("name"))
+            # st.write(st.session_state["user_info"].get("email"))
+            if st.button("Log out"):
+                st.session_state["authenticator"].logout()
+        else:
+            st.session_state["authenticator"].login()
+
+        st.write("---")
+
         st.header(f"{APP_ICON} {APP_TITLE}")
         st.write("DAPA chatbot for secure reporting of scams.")
 
         # Privacy Section
         with st.expander("🔒 Privacy"):
             st.write(
-                "Query and response in this app are anonymously recorded and saved to LangSmith for product evaluation and improvement purposes."
+                """
+                1. Queries and responses in this app may be anonymously recorded by LangSmith to improve product performance.  
+                2. Your email address will only be stored if you choose to report a number.
+                3. This app uses cookies to remember your login session. 
+                """
             )
+
+        st.write("---")
 
         st.markdown(
             "Made with ❤️ by [Raushan](https://www.linkedin.com/in/raushan-in/) in Trier"
         )
-
-        st.write("---")
-
-        if st.session_state["connected"]:
-            st.image(st.session_state["user_info"].get("picture"))
-            st.write("Hello, " + st.session_state["user_info"].get("name"))
-            st.write("Your email is " + st.session_state["user_info"].get("email"))
-            if st.button("Log out"):
-                st.session_state["authenticator"].logout()
-        else:
-            st.session_state["authenticator"].login()
 
 
 if __name__ == "__main__":
