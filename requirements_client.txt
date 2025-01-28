@@ -1,5 +1,4 @@
 httpx
 python-dotenv
 streamlit
-google-auth-oauthlib
-google-auth
+streamlit-google-auth

@@ -4,44 +4,33 @@ import os
 import httpx
 import streamlit as st
 from dotenv import load_dotenv
-from google_auth_oauthlib.flow import Flow
+from streamlit_google_auth import Authenticate
 
 APP_TITLE = "DAPA"
 APP_ICON = "🛡️"
+st.set_page_config(page_title=APP_TITLE, page_icon=APP_ICON)
 
 # Load environment variables
 load_dotenv()
 BACKEND_URL = os.getenv("BACKEND_URL")
 CHAT_API = BACKEND_URL + "/chat"
-GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
-GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+SECRET_JSON_PATH = os.getenv("GOOGLE_SECRET_JSON_PATH")
+COOKIE_KEY = os.getenv("GOOGLE_AUTH_COOKIE_KEY")
 REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
 
-# Initialize Google OAuth flow
-def google_login_flow():
-    flow = Flow.from_client_config(
-        {
-            "web": {
-                "client_id": GOOGLE_CLIENT_ID,
-                "client_secret": GOOGLE_CLIENT_SECRET,
-                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-                "token_uri": "https://oauth2.googleapis.com/token",
-            }
-        },
-        scopes = [
-            "openid",
-            "https://www.googleapis.com/auth/userinfo.email",
-            "https://www.googleapis.com/auth/userinfo.profile",
-        ]
+# Initialize Google Authenticator
+if "connected" not in st.session_state:
+    authenticator = Authenticate(
+        secret_credentials_path=os.getenv("GOOGLE_SECRET_JSON_PATH"),
+        cookie_name="dapa_cookie",
+        cookie_key=os.getenv("GOOGLE_AUTH_COOKIE_KEY"),
+        redirect_uri=os.getenv("GOOGLE_REDIRECT_URI"),
     )
-    flow.redirect_uri = REDIRECT_URI 
-    auth_url, _ = flow.authorization_url(prompt="consent")
-    return flow, auth_url
+    st.session_state["authenticator"] = authenticator
 
-def fetch_google_user_info(flow):
-    session = flow.authorized_session()
-    user_info = session.get("https://openidconnect.googleapis.com/v1/userinfo").json()
-    return {"name": user_info.get("name"), "email": user_info.get("email")}
+# Catch the login event
+st.session_state["authenticator"].check_authentification()
+
 
 async def get_response(user_message: str, thread_id: str | None = None) -> dict:
     payload = {"user_message": user_message, "thread_id": thread_id}
@@ -55,16 +44,13 @@ async def get_response(user_message: str, thread_id: str | None = None) -> dict:
 
 
 async def main():
-    st.set_page_config(page_title=APP_TITLE, page_icon=APP_ICON)
-
     # Initialize session states
     if "thread_id" not in st.session_state:
         st.session_state.thread_id = None
     if "messages" not in st.session_state:
         st.session_state.messages = []
-    if "google_user" not in st.session_state:
-        st.session_state.google_user = None
 
+    # Main Chat Interface
     st.title(f"{APP_ICON} DAPA AI Assistant")
     st.write(
         "This bot helps you identify or report phone numbers involved in financial fraud or cyber scams."
@@ -78,7 +64,7 @@ async def main():
         else:
             st.chat_message(responder_type).write(message["content"])
 
-    # User input
+    # User Input
     if user_input := st.chat_input("Type your message here..."):
         st.session_state.messages.append({"responder": "human", "content": user_input})
         st.chat_message("human").write(user_input)
@@ -101,6 +87,7 @@ async def main():
             else:
                 st.chat_message(responder).write(response_message)
 
+    # Sidebar for Google Login and Other Features
     with st.sidebar:
         st.header(f"{APP_ICON} {APP_TITLE}")
         st.write("DAPA chatbot for secure reporting of scams.")
@@ -117,24 +104,14 @@ async def main():
 
         st.write("---")
 
-        # Google Login Section
-        if st.session_state.google_user:
-            st.write(f"Welcome, {st.session_state.google_user['name']}!")
-            st.write(f"Email: {st.session_state.google_user['email']}")
-            if st.button("Logout"):
-                st.session_state.google_user = None
+        if st.session_state["connected"]:
+            st.image(st.session_state["user_info"].get("picture"))
+            st.write("Hello, " + st.session_state["user_info"].get("name"))
+            st.write("Your email is " + st.session_state["user_info"].get("email"))
+            if st.button("Log out"):
+                st.session_state["authenticator"].logout()
         else:
-            st.write("Login with Google to access more features.")
-            flow, auth_url = google_login_flow()
-            st.session_state.flow = flow
-            st.markdown(f"[Login]({auth_url})")
-
-        # Handle redirect after login
-        if "code" in st.query_params:
-            code = st.query_params["code"]
-            flow.fetch_token(code=code)
-            user_info = fetch_google_user_info(flow)
-            st.session_state.google_user = user_info
+            st.session_state["authenticator"].login()
 
 
 if __name__ == "__main__":
