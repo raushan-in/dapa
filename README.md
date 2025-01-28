@@ -74,11 +74,18 @@ DAPA leverages an AI chatbot over traditional form-based tools for the following
 
 ## Setup Instructions
 ### Environment Configuration
-Create the environment file:
+1. Create the environment file:
+- Run the following command in your terminal:
 ```bash
 cp example.env .env
 ```
-- Add Groq token
+
+2. Add API Keys
+- Obtain [https://console.groq.com/keys] and add GROQ_API_KEY to the .env file.
+
+3. Google Authentication Setup
+- Generate a Google client secret keys [https://console.cloud.google.com/] for user authentication.
+- Download the JSON credentials file and update the GOOGLE_SECRET_JSON_PATH variable in .env
 
 ### Build and Run the Application
 Build the application container using Docker:
