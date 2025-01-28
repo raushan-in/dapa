@@ -31,8 +31,22 @@ if "connected" not in st.session_state:
 # Catch the login event
 st.session_state["authenticator"].check_authentification()
 
+if not st.session_state.get("connected", False):
+    st.warning(
+        "**🔑 Please log in to report a number or search for a scammer.**\n\n"
+        "Click on **`>`** (top-left corner) to open the sidebar and sign in with Google."
+    )
 
-async def get_response(user_message: str, thread_id: str | None = None) -> dict:
+
+async def get_response(user_message: str) -> dict:
+    thread_id = st.session_state.thread_id
+    user_email = st.session_state.user_email
+    if not user_email:
+        return {
+            "response_message": "Please log in to report a number or search for a scammer.",
+            "responder": "tool",
+            "thread_id": thread_id,
+        }
     payload = {"user_message": user_message, "thread_id": thread_id}
     async with httpx.AsyncClient(timeout=10.0) as client:
         try:
@@ -49,6 +63,8 @@ async def main():
         st.session_state.thread_id = None
     if "messages" not in st.session_state:
         st.session_state.messages = []
+    if "user_email" not in st.session_state:
+        st.session_state.user_email = None
 
     # Main Chat Interface
     st.title(f"{APP_ICON} DAPA AI Assistant")
@@ -69,7 +85,7 @@ async def main():
         st.session_state.messages.append({"responder": "human", "content": user_input})
         st.chat_message("human").write(user_input)
 
-        response = await get_response(user_input, st.session_state.thread_id)
+        response = await get_response(user_input)
 
         if "error" in response:
             st.error(response["error"])
@@ -92,7 +108,7 @@ async def main():
         if st.session_state["connected"]:
             st.image(st.session_state["user_info"]["picture"])
             st.write(st.session_state["user_info"].get("name"))
-            # st.write(st.session_state["user_info"].get("email"))
+            st.session_state.user_email = st.session_state["user_info"].get("email")
             if st.button("Log out"):
                 st.session_state["authenticator"].logout()
         else:
