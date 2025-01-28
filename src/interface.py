@@ -33,7 +33,7 @@ st.session_state["authenticator"].check_authentification()
 
 if not st.session_state.get("connected", False):
     st.warning(
-        "**🔑 Please log in to report a number or search for a scammer.**\n\n"
+        "**🔑 Please sign in to report a number or search for a scammer.**\n\n"
         "Click on **`>`** (top-left corner) to open the sidebar and sign in with Google."
     )
 
@@ -43,7 +43,7 @@ async def get_response(user_message: str) -> dict:
     user_email = st.session_state.user_email
     if not user_email:
         return {
-            "response_message": "Please log in to report a number or search for a scammer.",
+            "response_message": "Please sign in to report a number or search for a scammer.",
             "responder": "tool",
             "thread_id": thread_id,
         }
