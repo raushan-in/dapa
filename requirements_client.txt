@@ -1,4 +1,4 @@
 httpx
-pydantic
 python-dotenv
 streamlit
+streamlit-google-auth
