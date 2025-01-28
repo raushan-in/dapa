@@ -10,19 +10,31 @@ from langchain_core.messages import (
 from langchain_core.runnables import RunnableConfig
 
 from agent import cyber_guard
-from schema import Chat
-from settings import settings
+from schema import Chat, UserInput
 
 
-async def get_llm_response(user_input):
+async def get_llm_response(user_input: UserInput):
     thread_id = user_input.thread_id or str(uuid4())
-    kwargs = {
-        "input": {"messages": [HumanMessage(content=user_input.user_message)]},
-        "config": RunnableConfig(
-            configurable={"thread_id": thread_id, "model": settings.GROQ_MODEL}
-        ),
-    }
-    response = await cyber_guard.ainvoke(**kwargs)
+    user_email = user_input.email or None
+
+    if user_email:
+        user_input.user_message = (
+            f"{user_input.user_message} \n Reporter Email: {user_email}"
+        )
+        kwargs = {
+            "input": {"messages": [HumanMessage(content=user_input.user_message)]},
+            "config": RunnableConfig(
+                configurable={"thread_id": thread_id, "email": user_email},
+            ),
+        }
+        response = await cyber_guard.ainvoke(**kwargs)
+    else:
+        kwargs = {
+            "input": {"messages": [HumanMessage(content=user_input.user_message)]},
+            "config": RunnableConfig(configurable={"thread_id": thread_id}),
+        }
+        response = await cyber_guard.ainvoke(**kwargs)
+
     return response, thread_id
 
 

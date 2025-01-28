@@ -16,7 +16,9 @@ class UserInput(BaseModel):
         default=None,
         examples=["847c6285-8fc9-4560-a83f-4e628xx09254"],
     )
-    email: EmailStr | None = Field(default=None)
+    email: EmailStr = Field(
+        description="User email address.",
+    )
 
 
 class SingleResponse(BaseModel):

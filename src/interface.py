@@ -47,7 +47,11 @@ async def get_response(user_message: str) -> dict:
             "responder": "tool",
             "thread_id": thread_id,
         }
-    payload = {"user_message": user_message, "thread_id": thread_id}
+    payload = {
+        "user_message": user_message,
+        "thread_id": thread_id,
+        "email": user_email,
+    }
     async with httpx.AsyncClient(timeout=10.0) as client:
         try:
             response = await client.post(CHAT_API, json=payload)
