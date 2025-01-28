@@ -58,7 +58,7 @@ async def get_response(user_message: str) -> dict:
             response.raise_for_status()
             return response.json()
         except httpx.HTTPError as e:
-            return {"error": f"Error connecting to backend: {str(e)}"}
+            return {"error": f"Error connecting to backend: {repr(e)}"}
 
 
 async def main():
