@@ -6,10 +6,15 @@ from database import Scammer, get_session
 
 @tool
 async def register_scam(
-    scammer_mobile: str, scam_id: int, reporter_ordeal: str, reporter_mobile: str
+    scammer_mobile: str,
+    scam_id: int,
+    reporter_ordeal: str,
+    reporter_mobile: str = None,
+    reporter_email: str = None,
 ) -> str:
     """
     Registers a report of a scam incident into the database.
+    Provide either the reporter mobile number or email.
 
     Parameters:
             - scammer_mobile (str): The mobile_number of the alleged scammer.
@@ -19,6 +24,7 @@ async def register_scam(
               Should not exceed 50 words.
             - reporter_mobile (str): The mobile_number of the person reporting the scam.
               Must be formatted as "+XX-<mobile_number>", where "+XX" is the country code.
+            - reporter_email (str): The email address of the person reporting the scam.
 
     Returns:
         str: A confirmation message if the report is registered successfully, or an error
@@ -30,6 +36,7 @@ async def register_scam(
             scam_id=scam_id,
             reporter_ordeal=reporter_ordeal,
             reporter_mobile=reporter_mobile,
+            reporter_email=reporter_email,
         )
         async with get_session() as session:
             session.add(scammer)

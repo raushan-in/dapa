@@ -1,5 +1,8 @@
+from functools import wraps
 from uuid import uuid4
 
+import redis
+from fastapi import HTTPException
 from langchain_core.messages import (
     AIMessage,
     BaseMessage,
@@ -10,19 +13,35 @@ from langchain_core.messages import (
 from langchain_core.runnables import RunnableConfig
 
 from agent import cyber_guard
-from schema import Chat
+from schema import Chat, UserInput
 from settings import settings
 
+# Connect to Redis
+redis_client = redis.StrictRedis.from_url(settings.REDIS_URL, decode_responses=True)
 
-async def get_llm_response(user_input):
+
+async def get_llm_response(user_input: UserInput):
     thread_id = user_input.thread_id or str(uuid4())
-    kwargs = {
-        "input": {"messages": [HumanMessage(content=user_input.user_message)]},
-        "config": RunnableConfig(
-            configurable={"thread_id": thread_id, "model": settings.GROQ_MODEL}
-        ),
-    }
-    response = await cyber_guard.ainvoke(**kwargs)
+    user_email = user_input.email or None
+
+    if user_email:
+        user_input.user_message = (
+            f"{user_input.user_message} \n Reporter Email: {user_email}"
+        )
+        kwargs = {
+            "input": {"messages": [HumanMessage(content=user_input.user_message)]},
+            "config": RunnableConfig(
+                configurable={"thread_id": thread_id, "email": user_email},
+            ),
+        }
+        response = await cyber_guard.ainvoke(**kwargs)
+    else:
+        kwargs = {
+            "input": {"messages": [HumanMessage(content=user_input.user_message)]},
+            "config": RunnableConfig(configurable={"thread_id": thread_id}),
+        }
+        response = await cyber_guard.ainvoke(**kwargs)
+
     return response, thread_id
 
 
@@ -77,3 +96,37 @@ def infer_chat_message(message: BaseMessage) -> Chat:
                 raise ValueError(f"Unsupported chat message role: {message.role}")
         case _:
             raise ValueError(f"Unsupported message type: {message.__class__.__name__}")
+
+
+def rate_limiter(func):
+    """
+    Rate limiter to restrict the number of requests per email.
+    """
+
+    @wraps(func)
+    async def wrapper(user_input: UserInput, *args, **kwargs):
+
+        RATE_LIMIT = 10  # Max API calls per email
+        HOUR = 24
+        TIME_WINDOW = HOUR * 60 * 60  # hours in seconds
+
+        email = user_input.email
+        email_key = f"rate_limit:{email}"
+
+        # Get current request count
+        request_count = redis_client.get(email_key)
+
+        if request_count is not None and int(request_count) >= RATE_LIMIT:
+            raise HTTPException(
+                status_code=429,
+                detail=f"Rate limit exceeded. Only {RATE_LIMIT} requests allowed per {HOUR} hours.",
+            )
+
+        # Increment count and set expiry if it's a new key
+        redis_client.incr(email_key)
+        if request_count is None:
+            redis_client.expire(email_key, TIME_WINDOW)
+
+        return await func(user_input, *args, **kwargs)
+
+    return wrapper

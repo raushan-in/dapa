@@ -2,8 +2,8 @@ import re
 from contextlib import asynccontextmanager
 from datetime import datetime
 
-from fastapi import Depends
-from pydantic import validator
+from typing import Optional
+from pydantic import validator, root_validator, EmailStr
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlmodel import Field, SQLModel
@@ -44,18 +44,45 @@ class Scammer(SQLModel, table=True):
     scammer_mobile: str = Field(index=True, description="Scammer mobile number")
     scam_id: int = Field(description="Scam ID of the scam type")
     reporter_ordeal: str = Field(description="Summary of the scam")
-    reporter_mobile: str = Field(description="Reporter mobile number")
+    reporter_mobile: Optional[str] = Field(
+        default=None, description="Reporter mobile number"
+    )
+    reporter_email: Optional[EmailStr] = Field(
+        default=None, description="Reporter email"
+    )
     created_at: datetime = Field(
-        default_factory=datetime.utcnow, description="Timestamp of report creation"
+        default_factory=datetime.now, description="Timestamp of report creation"
     )
 
-    @validator("scammer_mobile", "reporter_mobile", pre=True)
-    def validate_mobile_number(cls, value: str) -> str:
+    @root_validator(pre=True)
+    def check_contact_info(cls, values):
+        """Ensure at least one of reporter_mobile or reporter_email is provided."""
+        mobile = values.get("reporter_mobile")
+        email = values.get("reporter_email")
+
+        if not mobile and not email:
+            raise ValueError(
+                "At least one of 'reporter_mobile' or 'reporter_email' must be provided."
+            )
+
+        return values
+
+    @staticmethod
+    def validate_mobile_number(value: str) -> str:
         """Validate mobile numbers using a regex."""
         pattern = r"^\+\d{1,3}-?\d{6,14}$"  # E.164 format
-        if not re.match(pattern, value):
+        if value and not re.match(pattern, value):
             raise ValueError(f"Invalid mobile number: {value}")
         return value
+
+    @root_validator(pre=True)
+    def apply_validations(cls, values):
+        """Apply individual field validations."""
+        if values.get("reporter_mobile"):
+            values["reporter_mobile"] = cls.validate_mobile_number(
+                values["reporter_mobile"]
+            )
+        return values
 
     @validator("scam_id")
     def validate_scam_id(cls, value: int) -> int:
