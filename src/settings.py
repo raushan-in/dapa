@@ -8,6 +8,7 @@ from typing import Any
 from dotenv import find_dotenv
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
+import os
 
 
 class Settings(BaseSettings):
@@ -53,6 +54,12 @@ class Settings(BaseSettings):
     # API LIMITS
     API_RATE_LIMIT_PER_DAY: int = 12
 
+    # Logging
+    LOG_LEVEL: str = "INFO"  # Allowed: DEBUG, INFO, WARNING, ERROR, CRITICAL
+    LOG_ROTATION: str = "7 days"
+    LOG_FILE: str = "dapa_be.log"
+
+
     def model_post_init(self, __context: Any) -> None:
         """
         Validate the settings after initialization
@@ -68,6 +75,11 @@ class Settings(BaseSettings):
     def is_dev(self) -> bool:
         """checks if the application is running in development mode"""
         return self.MODE == "dev"
+    
+    @property
+    def root_path(self) -> str:
+        """returns the root path of the project"""
+        return os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 
 settings = Settings()

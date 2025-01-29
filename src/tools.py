@@ -6,6 +6,7 @@ from langchain_core.tools import tool
 from sqlmodel import select
 
 from database import Scammer, get_session
+from logs import logger
 
 
 @tool
@@ -45,12 +46,13 @@ async def register_scam(
         async with get_session() as session:
             session.add(scammer)
             await session.commit()
+            logger.info(f"Scam report registered: {scammer_mobile}")
             return f"{scammer_mobile} has been registered as a scammer. ✅ Thank you for combating scams! 🥇"
     except ValueError as exc:
-        print(repr(exc))
+        logger.error(f"Validation Error: {repr(exc)}")
         return f"ValueError: {repr(exc)}"
     except Exception as exc:
-        print(repr(exc))
+        logger.error(f"Error registering scam: {repr(exc)}")
         return f"An error occurred in registering a report for {scammer_mobile}."
 
 
@@ -80,7 +82,7 @@ async def search_scam(scammer_mobile: str) -> str:
                 return f"{scammer_mobile} has never been reported for scams or fraudulent activity."
             return f"{scammer_mobile} has been reported as a scammer {len(scams)} times in the past. 🚨 Be alert! ⚠️"
     except Exception as exc:
-        print(repr(exc))
+        logger.error(f"Error searching scam: {repr(exc)}")
         return f"An error occurred while searching scam for {scammer_mobile}."
 
 

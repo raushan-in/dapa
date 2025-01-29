@@ -16,6 +16,13 @@ services:
       - REDIS_URL=redis://dapa_redis:6379
     networks:
       - dapa-network
+    volumes:
+      - ./logs:/app/logs  # bind mount for logs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2" 
 
 
   dapa_streamlit_fe:
@@ -55,7 +62,7 @@ services:
     networks:
       - dapa-network
     volumes:
-      - pg_db_1:/var/lib/postgresql/data
+      - pg_db_1:/var/lib/postgresql/data  # named volume for pgdb
 
   dapa_redis:
     image: redis:latest
