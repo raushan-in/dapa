@@ -46,7 +46,7 @@ async def register_scam(
             session.add(scammer)
             await session.commit()
             return f"{scammer_mobile} has been registered as a scammer. ✅ Thank you for combating scams! 🥇"
-    except ValueError as e:
+    except ValueError as exc:
         print(repr(exc))
         return f"ValueError: {repr(exc)}"
     except Exception as exc:

@@ -11,7 +11,7 @@ from routes import bot_router
 from settings import settings
 
 
-async def lifespan(app):
+async def lifespan(_app):
     """
     Manages the lifespan of the FastAPI application.
     This function is called during the startup and shutdown of the application.

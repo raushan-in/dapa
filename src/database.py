@@ -64,6 +64,7 @@ class Scammer(SQLModel, table=True):
     )
 
     @root_validator(pre=True)
+    @classmethod
     def check_contact_info(cls, values):
         """Ensure at least one of reporter_mobile or reporter_email is provided."""
         mobile = values.get("reporter_mobile")
@@ -85,6 +86,7 @@ class Scammer(SQLModel, table=True):
         return value
 
     @root_validator(pre=True)
+    @classmethod
     def apply_validations(cls, values):
         """Apply individual field validations."""
         if values.get("reporter_mobile"):
@@ -94,9 +96,10 @@ class Scammer(SQLModel, table=True):
         return values
 
     @validator("scam_id")
+    @classmethod
     def validate_scam_id(cls, value: int) -> int:
         """Validate if scam_id exists in scam_categories."""
-        if value not in scam_categories.keys():
+        if value not in scam_categories:
             raise ValueError(
                 f"Invalid scam_id: {value}. Must be one of {list(scam_categories.keys())}."
             )

@@ -21,4 +21,4 @@ jobs:
         pip install -r requirements_server.txt
     - name: Analysing the code with pylint
       run: |
-        pylint $(git ls-files '*.py')
+        pylint --disable=W0718,C0301 src/

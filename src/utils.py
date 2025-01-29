@@ -109,8 +109,8 @@ def infer_chat_message(message: BaseMessage) -> Chat:
                     custom_data=message.content[0],
                 )
                 return custom_message
-            else:
-                raise ValueError(f"Unsupported chat message role: {message.role}")
+
+            raise ValueError(f"Unsupported chat message role: {message.role}")
         case _:
             raise ValueError(f"Unsupported message type: {message.__class__.__name__}")
 
@@ -123,9 +123,8 @@ def rate_limiter(func):
     @wraps(func)
     async def wrapper(user_input: UserInput, *args, **kwargs):
 
-        RATE_LIMIT = 10  # Max API calls per email
-        HOUR = 24
-        TIME_WINDOW = HOUR * 60 * 60  # hours in seconds
+        rate_limit = settings.API_RATE_LIMIT_PER_DAY
+        time_window = 24 * 60 * 60  # hours in seconds
 
         email = user_input.email
         email_key = f"rate_limit:{email}"
@@ -133,16 +132,16 @@ def rate_limiter(func):
         # Get current request count
         request_count = redis_client.get(email_key)
 
-        if request_count is not None and int(request_count) >= RATE_LIMIT:
+        if request_count is not None and int(request_count) >= rate_limit:
             raise HTTPException(
                 status_code=429,
-                detail=f"Rate limit exceeded. Only {RATE_LIMIT} requests allowed per {HOUR} hours.",
+                detail=f"Rate limit exceeded. Only {rate_limit} requests allowed per day.",
             )
 
         # Increment count and set expiry if it's a new key
         redis_client.incr(email_key)
         if request_count is None:
-            redis_client.expire(email_key, TIME_WINDOW)
+            redis_client.expire(email_key, time_window)
 
         return await func(user_input, *args, **kwargs)
 

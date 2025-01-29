@@ -6,7 +6,7 @@ It uses Pydantic's BaseSettings to load and validate settings from environment v
 from typing import Any
 
 from dotenv import find_dotenv
-from pydantic import SecretStr, computed_field
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -40,7 +40,7 @@ class Settings(BaseSettings):
     LANGCHAIN_TRACING_V2: bool = (
         False  # Data will be sent to Langchain for monitering and improvement, If enabled.
     )
-    LANGCHAIN_PROJECT: str = "default"
+    LANGCHAIN_PROJECT: str = "default_dapa"
     LANGCHAIN_ENDPOINT: str = "https://api.smith.langchain.com"
     LANGCHAIN_API_KEY: SecretStr | None = None  # LangSmith API key
 
@@ -49,6 +49,9 @@ class Settings(BaseSettings):
 
     # Redis
     REDIS_URL: str
+
+    # API LIMITS
+    API_RATE_LIMIT_PER_DAY: int = 12
 
     def model_post_init(self, __context: Any) -> None:
         """
