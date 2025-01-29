@@ -112,8 +112,8 @@ async def handle_user_input():
 
         if "error" in response:
             if response["error"] == "cooling_period_active":
-                st.chat_message("tool", avatar="🛡️").write(
-                    "A cooling period applied. 🥶 Please try after some time."
+                st.chat_message("tool", avatar="🥶").write(
+                    "A cooling period applied. Please try after some time."
                 )
             else:
                 st.error(response["error"])
