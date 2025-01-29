@@ -107,7 +107,7 @@ docker compose up --build -d
 
 ## Future Roadmap
 - **WhatsApp Integration**: Users will be able to report and identify scams via WhatsApp for enhanced convenience. This will be achieved through a webhook system.
-- **Enhanced AI Capabilities**: Continuous improvement of the scam categorization model to ensure accuracy and adaptability to emerging scam types.
+- **Assistance in Filing a Case**: Help the user draft a complaint application and identify the nearest cyber police station. 
 ---
 
 ## Contact
