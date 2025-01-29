@@ -1,6 +1,7 @@
 """
 This module sets up the Streamlit interface for the DAPA application.
-It includes configuration for the app title, icon, and environment variables.
+It initializes the chatbot and handles user input and bot responses.
+Google authentication is used to allow users to sign in.
 """
 
 import asyncio
@@ -11,6 +12,7 @@ import streamlit as st
 from dotenv import load_dotenv
 from streamlit_google_auth import Authenticate
 
+# Constants
 APP_TITLE = "DAPA"
 APP_ICON = "🛡️"
 st.set_page_config(page_title=APP_TITLE, page_icon=APP_ICON)
@@ -26,10 +28,10 @@ REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
 # Initialize Google Authenticator
 if "connected" not in st.session_state:
     authenticator = Authenticate(
-        secret_credentials_path=os.getenv("GOOGLE_SECRET_JSON_PATH"),
+        secret_credentials_path=SECRET_JSON_PATH,
         cookie_name="dapa_cookie",
-        cookie_key=os.getenv("GOOGLE_AUTH_COOKIE_KEY"),
-        redirect_uri=os.getenv("GOOGLE_REDIRECT_URI"),
+        cookie_key=COOKIE_KEY,
+        redirect_uri=REDIRECT_URI,
     )
     st.session_state["authenticator"] = authenticator
 
@@ -72,14 +74,16 @@ async def get_response(user_message: str) -> dict:
             response.raise_for_status()
             return response.json()
         except httpx.HTTPError as e:
+            if response.status_code == 429:
+                # Handle Rate Limit Error (429)
+                return {
+                    "error": "cooling_period_active",
+                }
             return {"error": f"Error connecting to backend: {repr(e)}"}
 
 
-async def main():
-    """
-    Main function to run the Streamlit app.
-    """
-    # Initialize session states
+async def initialize_session():
+    """Initialize session state variables."""
     if "thread_id" not in st.session_state:
         st.session_state.thread_id = None
     if "messages" not in st.session_state:
@@ -87,13 +91,9 @@ async def main():
     if "user_email" not in st.session_state:
         st.session_state.user_email = None
 
-    # Main Chat Interface
-    st.title(f"{APP_ICON} DAPA AI Assistant")
-    st.write(
-        "This bot helps you identify or report phone numbers involved in financial fraud or cyber scams."
-        "Please describe your incident below."
-    )
 
+async def display_chat():
+    """Displays chat messages."""
     for message in st.session_state.messages:
         responder_type = message["responder"]
         if responder_type == "tool":
@@ -101,7 +101,9 @@ async def main():
         else:
             st.chat_message(responder_type).write(message["content"])
 
-    # User Input
+
+async def handle_user_input():
+    """Handles user input and bot responses."""
     if user_input := st.chat_input("Type your message here..."):
         st.session_state.messages.append({"responder": "human", "content": user_input})
         st.chat_message("human").write(user_input)
@@ -109,7 +111,12 @@ async def main():
         response = await get_response(user_input)
 
         if "error" in response:
-            st.error(response["error"])
+            if response["error"] == "cooling_period_active":
+                st.chat_message("tool", avatar="🥶").write(
+                    "A cooling period applied. Please try after some time."
+                )
+            else:
+                st.error(response["error"])
         else:
             response_message = response["response_message"]
             responder = response["responder"]
@@ -124,7 +131,9 @@ async def main():
             else:
                 st.chat_message(responder).write(response_message)
 
-    # Sidebar for Google Login and Other Features
+
+async def setup_sidebar():
+    """Sets up the sidebar with authentication and app info."""
     with st.sidebar:
         if st.session_state["connected"]:
             st.image(st.session_state["user_info"]["picture"])
@@ -136,7 +145,6 @@ async def main():
             st.session_state["authenticator"].login()
 
         st.write("---")
-
         st.header(f"{APP_ICON} {APP_TITLE}")
         st.write("DAPA chatbot for secure reporting of scams.")
 
@@ -151,10 +159,25 @@ async def main():
             )
 
         st.write("---")
-
         st.markdown(
             "Made with ❤️ by [Raushan](https://www.linkedin.com/in/raushan-in/) in Trier"
         )
+
+
+async def main():
+    """Main function to run the Streamlit app."""
+    await initialize_session()
+
+    # Title and Description
+    st.title(f"{APP_ICON} DAPA AI Assistant")
+    st.write(
+        "This bot helps you identify or report phone numbers involved in financial fraud or cyber scams."
+        "Please describe your incident below."
+    )
+
+    await display_chat()
+    await handle_user_input()
+    await setup_sidebar()
 
 
 if __name__ == "__main__":

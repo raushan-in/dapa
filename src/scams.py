@@ -45,6 +45,6 @@ scam_categories = {
     ],
 }
 
-scam_categories_str = "\n".join(
+SCAM_CATEGORIES_STR = "\n".join(
     [f"{k}: {v[0]}-{v[1]}" for k, v in scam_categories.items()]
 )

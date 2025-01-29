@@ -15,7 +15,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, MessagesState, StateGraph
 from langgraph.prebuilt import ToolNode
 
-from prompts import instructions
+from prompts import INSTRUCTIONS
 from settings import settings
 from tools import register_scam, search_scam
 
@@ -48,7 +48,7 @@ def wrap_model(model: BaseChatModel) -> RunnableSerializable[AgentState, AIMessa
     """
     model_with_tools = model.bind_tools(tools)
     preprocessor = RunnableLambda(
-        lambda state: [SystemMessage(content=instructions)] + state["messages"],
+        lambda state: [SystemMessage(content=INSTRUCTIONS)] + state["messages"],
         name="StateModifier",
     )
     return preprocessor | model_with_tools

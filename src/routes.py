@@ -29,4 +29,4 @@ async def agent_chat(user_input: UserInput) -> SingleResponse:
         return SingleResponse(**response)
     except Exception as e:
         print(e)
-        raise HTTPException(status_code=500, detail="Unexpected error")
+        raise HTTPException(status_code=500, detail="Unexpected error") from e
