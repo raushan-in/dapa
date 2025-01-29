@@ -12,6 +12,10 @@ from settings import settings
 
 
 async def lifespan(app):
+    """
+    Manages the lifespan of the FastAPI application.
+    This function is called during the startup and shutdown of the application.
+    """
     await create_db_and_tables()
     yield
 

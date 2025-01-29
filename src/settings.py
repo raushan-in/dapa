@@ -62,12 +62,8 @@ class Settings(BaseSettings):
                 "GROQ_API_KEY is required! This key enables the application to connect with an advanced language model that understands queries and provides intelligent responses. You can generate your API at https://console.groq.com/keys ."
             )
 
-    @computed_field
-    @property
-    def BASE_URL(self) -> str:
-        return f"http://{self.HOST}:{self.PORT}"
-
     def is_dev(self) -> bool:
+        """checks if the application is running in development mode"""
         return self.MODE == "dev"
 
 

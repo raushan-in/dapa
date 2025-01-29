@@ -21,6 +21,15 @@ def verify_bearer(
         ),
     ],
 ) -> None:
+    """
+    Verifies the provided bearer token against the AUTH_SECRET setting.
+
+    Parameters:
+    - http_auth: The HTTP authorization credentials provided by the client.
+
+    Raises:
+    - HTTPException: If the token is invalid or not provided.
+    """
     if not settings.AUTH_SECRET:
         return
     auth_secret = settings.AUTH_SECRET.get_secret_value()

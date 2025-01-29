@@ -35,6 +35,17 @@ class AgentState(MessagesState, total=False):
 
 
 def wrap_model(model: BaseChatModel) -> RunnableSerializable[AgentState, AIMessage]:
+    """
+    Wraps the given language model with tools and a preprocessor.
+
+    The preprocessor adds system instructions to the state messages before passing them to the model.
+
+    Parameters:
+    - model: The language model to be wrapped.
+
+    Returns:
+    - A RunnableSerializable that processes the state and returns an AIMessage.
+    """
     model_with_tools = model.bind_tools(tools)
     preprocessor = RunnableLambda(
         lambda state: [SystemMessage(content=instructions)] + state["messages"],
@@ -44,9 +55,19 @@ def wrap_model(model: BaseChatModel) -> RunnableSerializable[AgentState, AIMessa
 
 
 async def acall_model(state: AgentState, config: RunnableConfig) -> AgentState:
+    """
+    Asynchronously calls the wrapped model with the given state and configuration.
+
+    Parameters:
+    - state: The current state of the agent, including messages.
+    - config: The configuration for the runnable.
+
+    Returns:
+    - The updated state with the model's response added to the messages.
+    """
     model_runnable = wrap_model(llm)
     response = await model_runnable.ainvoke(state, config)
-    # We return a list, because this will get added to the existing list
+    # Returns a list as this will get added to the existing list
     return {"messages": [response]}
 
 

@@ -44,6 +44,15 @@ if not st.session_state.get("connected", False):
 
 
 async def get_response(user_message: str) -> dict:
+    """
+    Sends a user message to the backend chat API and returns the response.
+
+    Parameters:
+    - user_message: The message from the user to be sent to the backend.
+
+    Returns:
+    - A dictionary containing the response from the backend or an error message if the request fails.
+    """
     thread_id = st.session_state.thread_id
     user_email = st.session_state.user_email
     if not user_email:
@@ -67,6 +76,9 @@ async def get_response(user_message: str) -> dict:
 
 
 async def main():
+    """
+    Main function to run the Streamlit app.
+    """
     # Initialize session states
     if "thread_id" not in st.session_state:
         st.session_state.thread_id = None

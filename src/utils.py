@@ -25,6 +25,18 @@ redis_client = redis.StrictRedis.from_url(settings.REDIS_URL, decode_responses=T
 
 
 async def get_llm_response(user_input: UserInput):
+    """
+    Sends user input to the language model and retrieves the response.
+
+    Parameters:
+    - user_input: An instance of UserInput containing the user's message and optional thread ID and email.
+
+    Returns:
+    - The response from the language model.
+
+    If the user provides an email, it is appended to the user message for context.
+    The function uses the thread ID to maintain conversation context across multiple interactions.
+    """
     thread_id = user_input.thread_id or str(uuid4())
     user_email = user_input.email or None
 
@@ -50,6 +62,7 @@ async def get_llm_response(user_input: UserInput):
 
 
 def convert_message_content_to_string(content: str | list[str | dict]) -> str:
+    """Convert message content to a string."""
     if isinstance(content, str):
         return content
     text: list[str] = []
