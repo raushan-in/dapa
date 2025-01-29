@@ -1,3 +1,8 @@
+"""
+This module initializes and configures the FastAPI application for the DAPA project.
+It sets up the application title, summary, and includes the necessary routers.
+"""
+
 import uvicorn
 from fastapi import FastAPI
 

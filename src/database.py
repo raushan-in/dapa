@@ -1,3 +1,8 @@
+"""
+This module sets up the database connection using SQLAlchemy and SQLModel.
+It includes the creation of an asynchronous engine and session for database operations.
+"""
+
 import re
 from contextlib import asynccontextmanager
 from datetime import datetime

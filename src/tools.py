@@ -1,3 +1,7 @@
+"""
+This module contains tools for LangGraph agent.
+"""
+
 from langchain_core.tools import tool
 from sqlmodel import select
 

@@ -1,4 +1,7 @@
-"""AI agents"""
+"""
+This module sets up the AI agent for the DAPA application.
+It configures the language model, state graph, and tools for handling user interactions.
+"""
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import AIMessage, SystemMessage

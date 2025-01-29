@@ -1,3 +1,7 @@
+"""
+This module contains the prompt instructions for the DAPA AI bot.
+"""
+
 from scams import scam_categories_str
 
 instructions = f"""

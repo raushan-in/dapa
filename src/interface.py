@@ -1,3 +1,8 @@
+"""
+This module sets up the Streamlit interface for the DAPA application.
+It includes configuration for the app title, icon, and environment variables.
+"""
+
 import asyncio
 import os
 

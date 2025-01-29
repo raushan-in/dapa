@@ -1,3 +1,7 @@
+"""
+This module provides common utility functions for the DAPA application.
+"""
+
 from functools import wraps
 from uuid import uuid4
 

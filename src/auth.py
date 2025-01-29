@@ -1,3 +1,8 @@
+"""
+This module provides authentication functionalities using FastAPI.
+It includes functions to verify bearer tokens and handle authorization.
+"""
+
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, status

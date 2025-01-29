@@ -1,3 +1,8 @@
+"""
+This module defines the data models (schemas) used in the DAPA application.
+It includes Pydantic models for user input and other data structures.
+"""
+
 from typing import Any, Literal, NotRequired
 
 from pydantic import BaseModel, EmailStr, Field

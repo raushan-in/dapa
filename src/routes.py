@@ -1,5 +1,5 @@
 """
-Endpoints defination
+This module defines the API routes for the DAPA application.
 """
 
 from fastapi import APIRouter, Depends, HTTPException

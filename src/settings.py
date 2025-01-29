@@ -1,3 +1,8 @@
+"""
+This module defines the environment-specific configuration settings for the DAPA application.
+It uses Pydantic's BaseSettings to load and validate settings from environment variables.
+"""
+
 from typing import Any
 
 from dotenv import find_dotenv

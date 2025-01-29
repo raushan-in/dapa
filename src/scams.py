@@ -1,3 +1,7 @@
+"""
+scam definitions
+"""
+
 scam_categories = {
     1: [
         "Fake Authority Call",
