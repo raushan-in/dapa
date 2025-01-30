@@ -5,6 +5,7 @@ This module defines the API routes for the DAPA application.
 from fastapi import APIRouter, Depends, HTTPException
 
 from auth import verify_bearer
+from logs import logger
 from schema import SingleResponse, UserInput
 from utils import get_llm_response, infer_chat_message, rate_limiter
 
@@ -28,5 +29,5 @@ async def agent_chat(user_input: UserInput) -> SingleResponse:
         }
         return SingleResponse(**response)
     except Exception as e:
-        print(e)
+        logger.error(f"Error in agent_chat: {repr(e)}")
         raise HTTPException(status_code=500, detail="Unexpected error") from e

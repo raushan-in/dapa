@@ -25,6 +25,7 @@ langgraph==0.2.62
 langgraph-checkpoint==2.0.9
 langgraph-sdk==0.1.51
 langsmith==0.2.10
+loguru==0.7.3
 mccabe==0.7.0
 msgpack==1.1.0
 numexpr==2.10.2
