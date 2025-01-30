@@ -4,13 +4,14 @@ It sets up the application title, summary, and includes the necessary routers.
 """
 
 import uvicorn
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from database import create_db_and_tables
+from logs import logger
+from middlewares import LogRequestsMiddleware
 from routes import bot_router
 from settings import settings
-
-from logs import logger
 
 
 async def lifespan(_app):
@@ -25,13 +26,15 @@ async def lifespan(_app):
 app = FastAPI(title="DAPA", summary="Digital Arrest Protection App", lifespan=lifespan)
 
 
-@app.middleware("http")
-async def log_requests(request: Request, call_next):
-    """Logs incoming HTTP requests and responses."""
-    logger.info(f"Request: {request.method} {request.url}")
-    response = await call_next(request)
-    logger.info(f"Response: {response.status_code}")
-    return response
+# Middlewares
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.ALLOWED_HOSTS,
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
+app.add_middleware(LogRequestsMiddleware)
 
 
 # Endpoint router

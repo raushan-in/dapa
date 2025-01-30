@@ -5,9 +5,9 @@ This module defines the API routes for the DAPA application.
 from fastapi import APIRouter, Depends, HTTPException
 
 from auth import verify_bearer
+from logs import logger
 from schema import SingleResponse, UserInput
 from utils import get_llm_response, infer_chat_message, rate_limiter
-from logs import logger
 
 bot_router = APIRouter(tags=["bot"], dependencies=[Depends(verify_bearer)])
 

@@ -1,7 +1,9 @@
 import logging
-import sys
 import os
+import sys
+
 from loguru import logger
+
 from settings import settings
 
 # Log file path
@@ -18,23 +20,34 @@ logger.remove()
 logger.add(sys.stdout, format="{time} - {level} - {message}", level=settings.LOG_LEVEL)
 
 # File logging (persistent logs)
-logger.add(LOG_FILE, format="{time} - {level} - {message}", level=settings.LOG_LEVEL, rotation=settings.LOG_ROTATION)
+logger.add(
+    LOG_FILE,
+    format="{time} - {level} - {message}",
+    level=settings.LOG_LEVEL,
+    rotation=settings.LOG_ROTATION,
+)
+
 
 # Intercept Python's logging module (Uvicorn, FastAPI logs)
 class InterceptHandler(logging.Handler):
     """Intercepts `logging` logs and redirects to `loguru`."""
-    
+
     def emit(self, record):
-        level = logger.level(record.levelname).name if record.levelname in logger._core.levels else "INFO"
+        try:
+            level = logger.level(record.levelname).name
+        except ValueError:
+            level = "INFO"
         logger.log(level, record.getMessage())
+
 
 def setup_logging():
     """Redirects FastAPI & Uvicorn logs to `loguru`."""
-    
+
     logging.basicConfig(handlers=[InterceptHandler()], level=logging.INFO)
 
     # Redirect Uvicorn & FastAPI logs
     for log_name in ["uvicorn", "uvicorn.access", "uvicorn.error", "fastapi"]:
         logging.getLogger(log_name).handlers = [InterceptHandler()]
+
 
 setup_logging()

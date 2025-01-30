@@ -6,9 +6,9 @@ It includes the creation of an asynchronous engine and session for database oper
 import re
 from contextlib import asynccontextmanager
 from datetime import datetime
-
 from typing import Optional
-from pydantic import validator, root_validator, EmailStr
+
+from pydantic import EmailStr, root_validator, validator
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlmodel import Field, SQLModel
