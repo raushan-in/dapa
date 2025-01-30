@@ -8,7 +8,7 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from settings import settings
+from src.settings import settings
 
 
 def verify_bearer(

@@ -25,8 +25,10 @@ class Settings(BaseSettings):
     )
     # path
     MODE: str | None = None  # dev, prod
-    HOST: str = "0.0.0.0"
-    PORT: int = 8080
+
+    # Ports
+    SERVER_PORT: int
+    CLIENT_PORT: int
 
     # Secret keys
     AUTH_SECRET: SecretStr | None = None

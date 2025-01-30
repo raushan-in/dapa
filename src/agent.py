@@ -15,9 +15,9 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, MessagesState, StateGraph
 from langgraph.prebuilt import ToolNode
 
-from prompts import INSTRUCTIONS
-from settings import settings
-from tools import register_scam, search_scam
+from src.prompts import INSTRUCTIONS
+from src.settings import settings
+from src.tools import register_scam, search_scam
 
 llm = ChatGroq(
     model=settings.GROQ_MODEL, temperature=settings.GROQ_MODEL_TEMP, streaming=False

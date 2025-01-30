@@ -7,12 +7,12 @@ services:
     depends_on:
         - dapa_pg
         - dapa_redis
-    ports:
-      - "8080:8080"
     env_file:
       - .env
+    ports:
+      - "${SERVER_PORT}:5050"
     environment:
-      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dapa_pg:${POSTGRES_PORT}/${POSTGRES_DB}
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dapa_pg:5432/${POSTGRES_DB}
       - REDIS_URL=redis://dapa_redis:6379
     networks:
       - dapa-network
@@ -30,14 +30,14 @@ services:
         context: .
         dockerfile: Dockerfile.client
       container_name: dapa_streamlit
-      ports:
-        - "8088:8088"
-      depends_on:
-        - dapa_be
       env_file:
         - .env
+      ports:
+        - "${CLIENT_PORT}:5051"
+      depends_on:
+        - dapa_be
       environment:
-        - BACKEND_URL=http://dapa_backend:8080
+        - BACKEND_URL=http://dapa_backend:5050
       networks:
         - dapa-network
       develop:
@@ -55,10 +55,10 @@ services:
   dapa_pg:
     image: postgres:latest
     container_name: dapa_pg
-    ports:
-      - "5432:5432"
     env_file:
       - .env
+    ports:
+      - "${POSTGRES_PORT}:5432"
     networks:
       - dapa-network
     volumes:

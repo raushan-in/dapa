@@ -7,8 +7,9 @@ RUN pip install --no-cache-dir -r requirements_client.txt
 
 COPY . .
 
-EXPOSE 8088
+EXPOSE 5051
 
-HEALTHCHECK CMD curl --fail http://localhost:8088/_stcore/health
+HEALTHCHECK CMD curl --fail http://localhost:5051/_stcore/health
 
-ENTRYPOINT ["streamlit", "run", "src/interface.py", "--server.port=8088", "--server.address=0.0.0.0"]
+# Start the frontend application
+ENTRYPOINT ["streamlit", "run", "src/interface.py", "--server.port=5051", "--server.address=0.0.0.0"]

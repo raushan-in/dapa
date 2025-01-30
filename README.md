@@ -95,8 +95,8 @@ docker compose up --build -d
 ```
 
 ### Access the App:
-- Chatbot: [http://localhost:8088/](http://localhost:8088/)
-- API Documentation: [http://localhost:8080/docs](http://localhost:8080/docs)
+- Chatbot: [http://localhost:8080/](http://localhost:8080/)
+- API Documentation: [http://localhost:8088/docs](http://localhost:8088/docs)
 
 ---
 

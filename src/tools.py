@@ -5,8 +5,8 @@ This module contains tools for LangGraph agent.
 from langchain_core.tools import tool
 from sqlmodel import select
 
-from database import Scammer, get_session
-from logs import logger
+from src.database import Scammer, get_session
+from src.logs import logger
 
 
 @tool

@@ -6,7 +6,7 @@ import sys
 
 from loguru import logger
 
-from settings import settings
+from src.settings import settings
 
 # Log file path
 LOG_PATH = os.path.join(settings.root_path, "logs")

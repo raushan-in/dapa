@@ -16,9 +16,9 @@ from langchain_core.messages import (
 )
 from langchain_core.runnables import RunnableConfig
 
-from agent import cyber_guard
-from schema import Chat, UserInput
-from settings import settings
+from src.agent import cyber_guard
+from src.schema import Chat, UserInput
+from src.settings import settings
 
 # Connect to Redis
 redis_client = redis.StrictRedis.from_url(settings.REDIS_URL, decode_responses=True)

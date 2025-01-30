@@ -2,7 +2,7 @@
 This module contains the prompt instructions for the DAPA AI bot.
 """
 
-from scams import SCAM_CATEGORIES_STR
+from src.scams import SCAM_CATEGORIES_STR
 
 INSTRUCTIONS = f"""
     You are an AI bot named DAPA. Your job is to assist users in reporting potential financial scams or fraud via mobile communication. 

@@ -1,17 +1,17 @@
 FROM python:3.12.3-slim
 
-# Set environment variables
+# log appears immediately
 ENV PYTHONUNBUFFERED 1
 WORKDIR /app
 
 COPY requirements_server.txt ./
 RUN pip install --no-cache-dir -r requirements_server.txt
 
-# Copy the application code
 COPY . .
 
-# Expose the port
-EXPOSE 8080
+EXPOSE 5050
 
-# Start the backend app
-CMD ["python", "src/main.py"]
+HEALTHCHECK CMD curl --fail http://localhost:5050/_stcore/health
+
+# Start the backend application
+ENTRYPOINT ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "5050"]

@@ -14,8 +14,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlmodel import Field, SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from scams import scam_categories
-from settings import settings
+from src.scams import scam_categories
+from src.settings import settings
 
 database_url = settings.DATABASE_URL.get_secret_value()
 
