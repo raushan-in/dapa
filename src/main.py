@@ -8,7 +8,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from database import create_db_and_tables
-from logs import logger
 from middlewares import LogRequestsMiddleware
 from routes import bot_router
 from settings import settings

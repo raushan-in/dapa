@@ -11,6 +11,8 @@ from logs import logger
 
 
 class LogRequestsMiddleware(BaseHTTPMiddleware):
+    """Middleware to log incoming requests and outgoing responses."""
+
     async def dispatch(self, request: Request, call_next):
         start_time = time.time()
         logger.info(f"Incoming request: {request.method} {request.url}")
